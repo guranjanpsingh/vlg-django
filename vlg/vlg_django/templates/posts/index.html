@@ -1,0 +1,89 @@
+{% extends 'application/base.html' %}
+
+{% block mainContent %}
+  <div class="col-sm-12 col-md-12 col-lg-9">
+    <form class="well padding-bottom-10" method="post" action="{% url 'vlg:createPost' %}">
+      {% csrf_token %}
+      <textarea name="post" placeholder="What are you thinking?" class="form-control" rows="2"></textarea>
+      <div class="margin-top-10">
+        <button class="btn btn-sm btn-primary pull-right submitPost" type="submit">
+          Post
+        </button>
+        &nbsp;
+      </div>
+    </form>
+    {% if posts %}
+      {% for post in posts %}
+        <span class="timeline-seperator text-center"> <span>{{post.postedOn}}</span>
+      		<div class="btn-group pull-right">
+      			<a class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" href="javascript:void(0);"><span class="caret single"></span></a>
+      			<ul class="dropdown-menu text-left">
+      				<li>
+      					<a class="text-primary editPost" href="#">Edit</a>
+      				</li>
+      				<li>
+      					<a class="text-danger deletePost" href="#">Delete</a>
+      				</li>
+      				<li>
+      					<a href="#">Hide this post</a>
+      				</li>
+      				<li>
+      					<a href="#">Hide future posts from this user</a>
+      				</li>
+      				<li>
+      					<a href="#">Mark as spam</a>
+      				</li>
+      			</ul>
+      		</div>
+        </span>
+
+        <div class="chat-body no-padding profile-message">
+      		<ul>
+      			<li class="message">
+      				<img class="online" src="/public/images/silhouette.jpeg">
+      				<span class="message-text col-md-11">
+      					<a class="username" href="#">{{post.postedBy}}</a>
+      					<p name="">{{post.post}}</p>
+      					<textarea id="" class="postBody form-control" name="postBody" style="display:none;">{{post.post}}</textarea>
+      				</span>
+      				<ul class="list-inline font-xs message-bar">
+      					<li>
+      						<a class="text-success  voteUpPost" href="#"><i class="fa fa-thumbs-up"></i> Like ({{post.Comment}})</a>
+      					</li>
+                <li>
+      						<a class="text-danger voteDownPost" href="#"><i class="fa fa-thumbs-down"></i> Dislike ()</a>
+      					</li>
+      					<li>
+      						<a class="text-muted" href="#">Show All Comments ({{post.Comment_set.count}})</a>
+      					</li>
+      				</ul>
+      			</li>
+            {% for comment in post.Comment_set.all %}
+            <li class="message message-reply">
+              <img class="online" src="">
+              <span class="message-text"> <a class="username" href="javascript:void(0);">{{comment.postedBy}}</a> {{comment.comment}}</span>
+              <ul class="list-inline font-xs">
+                <li>
+                  <a class="text-muted" href="#">{{comment.postedOn}}</a>
+                </li>
+                <li>
+                  <a class="text-success voteUpComment  " href="#"><i class="fa fa-thumbs-up"></i> Like ()</a>
+                </li>
+                <li>
+                  <a class="text-danger  voteDownComment" href="#"><i class="fa fa-thumbs-down"></i> Dislike ()</a>
+                </li>
+              </ul>
+              </li>
+            {% endfor %}
+      			<li class="message message-reply">
+      				<form class="padding-bottom-10" method="post" name="comment" action="{% url 'vlg:createComment' post.id %}" onsubmit="preventEventBubbling(event);">
+                {% csrf_token %}
+      					<input type="text" placeholder="Type and enter" class="form-control input-xs" name="comment">
+      				</form>
+      			</li>
+      		</ul>
+      	</div>
+      {% endfor %}
+    {% endif %}
+  </div>
+{% endblock %}
